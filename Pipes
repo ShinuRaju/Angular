@@ -1,0 +1,344 @@
+
+In Angular, **pipes** are a powerful feature used to **transform data directly in templates**. They format or manipulate values before they’re displayed, keeping your component code clean and focused on logic. Let’s break down how pipes work, their types, and usage:
+
+---
+
+### **1. Built-in Pipes**
+Angular provides several built-in pipes for common transformations:
+
+| Pipe              | Example Usage                          | Output                      |
+|-------------------|----------------------------------------|-----------------------------|
+| **`DatePipe`**    | `{{ today \| date:'fullDate' }}`       | `Thursday, June 15, 2023`   |
+| **`UpperCasePipe`** | `{{ 'hello' \| uppercase }}`           | `HELLO`                     |
+| **`CurrencyPipe`** | `{{ 100 \| currency:'EUR' }}`          | `€100.00`                   |
+| **`PercentPipe`**  | `{{ 0.75 \| percent }}`                | `75%`                       |
+| **`DecimalPipe`**  | `{{ 3.14159 \| number:'1.2-2' }}`      | `3.14`                      |
+| **`JsonPipe`**     | `{{ user \| json }}`                   | `{ "name": "Alice" }`       |
+| **`SlicePipe`**    | `{{ 'Angular' \| slice:0:4 }}`         | `Angu`                      |
+| **`AsyncPipe`**    | `{{ data$ \| async }}`                 | Resolves Observable/Promise |
+
+---
+
+### **2. Pipe Parameters**
+Pass parameters to customize output:
+```html
+<!-- Date formatting -->
+{{ today | date:'yyyy-MM-dd' }} <!-- 2023-06-15 -->
+
+<!-- Currency with code -->
+{{ 100 | currency:'EUR':'code' }} <!-- EUR100.00 -->
+```
+
+---
+
+### **3. Chaining Pipes**
+Apply multiple pipes sequentially:
+```html
+{{ 'hello' | uppercase | slice:0:3 }} <!-- Output: HEL -->
+```
+
+---
+
+### **4. Custom Pipes**
+Create your own pipes for custom transformations:
+
+#### **Step 1: Generate a Pipe**
+```bash
+ng generate pipe reverse
+```
+
+#### **Step 2: Implement Logic**
+```typescript
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({ name: 'reverse' })
+export class ReversePipe implements PipeTransform {
+  transform(value: string): string {
+    return value.split('').reverse().join('');
+  }
+}
+```
+
+#### **Step 3: Use in Templates**
+```html
+{{ 'hello' | reverse }} <!-- Output: olleh -->
+```
+
+#### **Step 4: Declare in Module** (if not auto-added)
+```typescript
+@NgModule({
+  declarations: [ReversePipe],
+})
+export class AppModule {}
+```
+
+---
+
+### **5. AsyncPipe for Observables/Promises**
+Handles asynchronous data automatically:
+```typescript
+// Component
+data$ = of('Loaded!').pipe(delay(2000)); // Observable
+```
+```html
+{{ data$ | async }} <!-- Displays "Loaded!" after 2 seconds -->
+```
+- **No manual subscription/unsubscription** required!
+
+---
+
+### **6. Pure vs Impure Pipes**
+| Type              | Behavior                                                                 | Use Case                    |
+|-------------------|-------------------------------------------------------------------------|-----------------------------|
+| **Pure Pipe**     | Re-runs only when input **value** or **reference** changes (default).   | Optimized for performance.  |
+| **Impure Pipe**   | Re-runs on **every change detection cycle** (use sparingly).            | Dynamic data (e.g., arrays).|
+
+```typescript
+@Pipe({ name: 'filter', pure: false }) // Impure pipe
+export class FilterPipe implements PipeTransform {
+  transform(items: any[], filterText: string): any[] {
+    return items.filter(item => item.includes(filterText));
+  }
+}
+```
+
+---
+
+### **7. Key Use Cases**
+1. **Formatting Data**: Dates, currencies, percentages.
+2. **Filtering Lists**: Search or sort results (use with caution for performance).
+3. **Debugging**: Display objects with `JsonPipe`.
+4. **Text Manipulation**: Uppercase, lowercase, or custom transformations.
+
+---
+
+### **Best Practices**
+- **Avoid Heavy Logic**: Pipes run often; keep them lightweight.
+- **Prefer Pure Pipes**: Use `pure: false` only when necessary.
+- **Use Services for Complex Logic**: Move heavy transformations to services.
+- **Test Pipes**:
+  ```typescript
+  it('reverses a string', () => {
+    const pipe = new ReversePipe();
+    expect(pipe.transform('123')).toBe('321');
+  });
+  ```
+
+---
+
+### **Common Pitfalls**
+- **Impure Pipes on Large Data**: Can cause performance issues.
+- **Mutating Inputs**: Pure pipes won’t detect changes if the input object/array is mutated (use immutability).
+
+---
+
+### **Summary**
+- **Built-in Pipes**: Simplify common tasks (dates, currency, etc.).
+- **Custom Pipes**: Create reusable transformations.
+- **AsyncPipe**: Simplify async data handling.
+- **Pure/Impure**: Optimize performance by controlling when pipes re-run.
+
+Pipes keep your templates clean and maintain a clear separation of concerns! 🚀
+
+
+
+Here are **commonly used custom pipes** Angular developers create to handle specific formatting, transformations, or business logic not covered by built-in pipes:
+
+---
+
+### **1. Filter/Search Pipe**  
+Filters an array based on a search term (often used with caution due to performance implications).  
+```typescript
+@Pipe({ name: 'filter', pure: false }) // Impure pipe (use sparingly)
+export class FilterPipe implements PipeTransform {
+  transform(items: any[], searchTerm: string, property: string): any[] {
+    if (!items || !searchTerm) return items;
+    return items.filter(item => 
+      item[property].toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
+}
+```
+**Usage**:  
+```html
+<input [(ngModel)]="searchText">
+<div *ngFor="let user of users | filter:searchText:'name'">
+  {{ user.name }}
+</div>
+```
+
+---
+
+### **2. Truncate/Shorten Text Pipe**  
+Shortens long text with an ellipsis.  
+```typescript
+@Pipe({ name: 'truncate' })
+export class TruncatePipe implements PipeTransform {
+  transform(value: string, limit: number = 50, trail: string = '...'): string {
+    return value.length > limit ? value.substring(0, limit) + trail : value;
+  }
+}
+```
+**Usage**:  
+```html
+{{ 'A very long text here' | truncate:10 }} <!-- A very... -->
+```
+
+---
+
+### **3. File Size Formatter Pipe**  
+Converts bytes to human-readable sizes (KB, MB, GB).  
+```typescript
+@Pipe({ name: 'fileSize' })
+export class FileSizePipe implements PipeTransform {
+  transform(bytes: number, decimals: number = 2): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
+  }
+}
+```
+**Usage**:  
+```html
+{{ 1048576 | fileSize }} <!-- 1 MB -->
+```
+
+---
+
+### **4. Status/Code Mapping Pipe**  
+Maps status codes to human-readable labels (e.g., `'active'` → `'Active'`).  
+```typescript
+@Pipe({ name: 'status' })
+export class StatusPipe implements PipeTransform {
+  transform(value: string): string {
+    const statusMap: { [key: string]: string } = {
+      'active': 'Active',
+      'inactive': 'Inactive',
+      'pending': 'Pending Review'
+    };
+    return statusMap[value] || value;
+  }
+}
+```
+**Usage**:  
+```html
+{{ 'active' | status }} <!-- Active -->
+```
+
+---
+
+### **5. Phone Number Formatting Pipe**  
+Formats phone numbers (e.g., `1234567890` → `(123) 456-7890`).  
+```typescript
+@Pipe({ name: 'phone' })
+export class PhonePipe implements PipeTransform {
+  transform(value: string): string {
+    if (!value) return '';
+    const cleaned = value.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    return match ? `(${match[1]}) ${match[2]}-${match[3]}` : value;
+  }
+}
+```
+**Usage**:  
+```html
+{{ '1234567890' | phone }} <!-- (123) 456-7890 -->
+```
+
+---
+
+### **6. Safe HTML/URL Pipe**  
+Bypasses Angular’s security to render HTML/URLs (uses `DomSanitizer`).  
+```typescript
+@Pipe({ name: 'safeHtml' })
+export class SafeHtmlPipe implements PipeTransform {
+  constructor(private sanitizer: DomSanitizer) {}
+
+  transform(html: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+}
+```
+**Usage**:  
+```html
+<div [innerHTML]="untrustedHtml | safeHtml"></div>
+```
+
+---
+
+### **7. Time Ago/Relative Time Pipe**  
+Displays time relative to now (e.g., `2 hours ago`).  
+```typescript
+@Pipe({ name: 'timeAgo' })
+export class TimeAgoPipe implements PipeTransform {
+  transform(value: Date): string {
+    const seconds = Math.floor((Date.now() - value.getTime()) / 1000);
+    const intervals: { [key: string]: number } = {
+      year: 31536000,
+      month: 2592000,
+      day: 86400,
+      hour: 3600,
+      minute: 60
+    };
+    for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+      const interval = Math.floor(seconds / secondsInUnit);
+      if (interval >= 1) return `${interval} ${unit}${interval > 1 ? 's' : ''} ago`;
+    }
+    return 'Just now';
+  }
+}
+```
+**Usage**:  
+```html
+{{ user.lastLogin | timeAgo }} <!-- 2 days ago -->
+```
+
+---
+
+### **8. Initials from Name Pipe**  
+Generates initials from a full name (e.g., `John Doe` → `JD`).  
+```typescript
+@Pipe({ name: 'initials' })
+export class InitialsPipe implements PipeTransform {
+  transform(name: string): string {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  }
+}
+```
+**Usage**:  
+```html
+{{ 'Alice Johnson' | initials }} <!-- AJ -->
+```
+
+---
+
+### **9. Currency Conversion Pipe**  
+Converts amounts between currencies using real-time rates (integrates with an API).  
+```typescript
+@Pipe({ name: 'currencyConvert' })
+export class CurrencyConvertPipe implements PipeTransform {
+  constructor(private currencyService: CurrencyService) {}
+
+  transform(amount: number, from: string, to: string): Observable<number> {
+    return this.currencyService.getRate(from, to).pipe(
+      map(rate => amount * rate)
+    );
+  }
+}
+```
+**Usage** (with `AsyncPipe`):  
+```html
+{{ 100 | currencyConvert:'USD':'EUR' | async | currency:'EUR' }} <!-- €85.00 -->
+```
+
+---
+
+### **Key Considerations**:
+- **Pure vs. Impure**: Most pipes should be pure (default). Use `pure: false` only when necessary (e.g., for dynamic arrays).
+- **Performance**: Avoid heavy logic in pipes (e.g., complex filtering/loops).
+- **Reusability**: Create shared modules for pipes used across multiple components.
+- **Testing**: Write unit tests for custom pipes to ensure correctness.
+
+Custom pipes streamline your templates and encapsulate reusable transformations! 🚀
