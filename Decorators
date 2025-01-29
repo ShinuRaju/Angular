@@ -1,0 +1,75 @@
+In Angular, decorators are functions that enhance classes or their members by adding metadata. This metadata informs Angular about how to process these classes, enabling features like dependency injection, component configuration, and more. Decorators are prefixed with `@` and are crucial in Angular's declarative syntax.
+
+### Types of Decorators in Angular
+
+1. **Class Decorators**  
+   Applied to class definitions to define their role in the Angular framework.  
+   - **Examples**:  
+     - `@Component`: Marks a class as an Angular component.  
+     - `@Directive`: Defines a class as a directive.  
+     - `@NgModule`: Declares a class as an NgModule for organizing dependencies.  
+     - `@Injectable`: Marks a service class for dependency injection.  
+     - `@Pipe`: Defines a class as a pipe for data transformation.  
+
+   ```typescript
+   @Component({
+     selector: 'app-example',
+     template: '<div>Example Component</div>'
+   })
+   export class ExampleComponent {}
+   ```
+
+2. **Property Decorators**  
+   Applied to class properties to enable features like data binding or element queries.  
+   - **Examples**:  
+     - `@Input`: Binds a property to an input from a parent component.  
+     - `@Output`: Binds a property to an event emitter for parent components.  
+     - `@ViewChild`/`@ViewChildren`: Queries child elements or directives in the component's view.  
+     - `@ContentChild`/`@ContentChildren`: Queries content projected via `<ng-content>`.  
+     - `@HostBinding`: Binds a property to a host element's property.  
+
+   ```typescript
+   export class ExampleComponent {
+     @Input() item: string;
+     @Output() clicked = new EventEmitter<void>();
+     @ViewChild('ref') templateRef: ElementRef;
+   }
+   ```
+
+3. **Method Decorators**  
+   Applied to methods to attach functionality like event listeners.  
+   - **Examples**:  
+     - `@HostListener`: Listens for events on the host element.  
+
+   ```typescript
+   export class ExampleDirective {
+     @HostListener('click', ['$event'])
+     onClick(event: Event) {
+       console.log('Host element clicked!');
+     }
+   }
+   ```
+
+4. **Parameter Decorators**  
+   Applied to constructor parameters to customize dependency injection.  
+   - **Examples**:  
+     - `@Inject`: Specifies a token for dependency injection (e.g., for non-class dependencies).  
+     - `@Optional`: Marks a dependency as optional.  
+     - `@Self`, `@SkipSelf`, `@Host`: Control dependency resolution scope.  
+
+   ```typescript
+   export class ExampleService {
+     constructor(
+       @Inject('API_URL') private apiUrl: string,
+       @Optional() private logger?: Logger
+     ) {}
+   }
+   ```
+
+### Summary
+- **Class Decorators**: Define the purpose of classes (components, services, modules).  
+- **Property Decorators**: Manage bindings, queries, and interactions with the DOM.  
+- **Method Decorators**: Attach event handlers or modify method behavior.  
+- **Parameter Decorators**: Customize how dependencies are injected into constructors.  
+
+These decorators streamline Angular's declarative approach, making code more readable and maintainable.
