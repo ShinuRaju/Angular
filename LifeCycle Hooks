@@ -1,0 +1,113 @@
+Angular's **lifecycle hooks** and **change detection** are closely intertwined mechanisms that manage a component's behavior from creation to destruction. Here's a structured explanation of how they work together:
+
+---
+
+### **Angular Lifecycle Hooks**
+These are predefined methods in Angular that allow you to tap into specific moments of a component's lifecycle. They execute in a fixed order:
+
+1. **`ngOnChanges`**  
+   - **When**: Called before `ngOnInit` (if inputs exist) and whenever input properties change.
+   - **Purpose**: React to input changes (e.g., `@Input()` values from a parent component).
+   - **Example**: Update internal state when a parent passes new data.
+
+2. **`ngOnInit`**  
+   - **When**: Called once after the first `ngOnChanges` (if inputs exist).
+   - **Purpose**: Initialize the component (e.g., fetch initial data).
+
+3. **`ngDoCheck`**  
+   - **When**: Called during every change detection cycle.
+   - **Purpose**: Implement custom change detection logic (e.g., track changes Angular doesn’t detect automatically).
+
+4. **`ngAfterContentInit`**  
+   - **When**: Called once after Angular projects external content (e.g., `<ng-content>`) into the component’s view.
+   - **Purpose**: Access projected content (like child components passed via `ng-content`).
+
+5. **`ngAfterContentChecked`**  
+   - **When**: Called after every check of projected content.
+   - **Purpose**: React to changes in projected content.
+
+6. **`ngAfterViewInit`**  
+   - **When**: Called once after the component’s view and child views are initialized.
+   - **Purpose**: Access `@ViewChild` elements or child components.
+
+7. **`ngAfterViewChecked`**  
+   - **When**: Called after every check of the component’s view and child views.
+   - **Purpose**: React to changes in the view (use sparingly for performance).
+
+8. **`ngOnDestroy`**  
+   - **When**: Called before the component is destroyed.
+   - **Purpose**: Cleanup (e.g., unsubscribe from observables, remove event listeners).
+
+---
+
+### **Change Detection**
+Angular automatically tracks changes in your application’s data and updates the DOM to reflect the current state. It runs in two modes:
+
+1. **Default Mode**  
+   - Checks the entire component tree for changes on every event (e.g., clicks, HTTP responses, timers).
+   - Uses `Zone.js` to trigger detection when async operations complete.
+
+2. **OnPush Mode**  
+   - Optimizes performance by checking a component **only when**:
+     - Its input references change.
+     - An event originates from the component or its children.
+     - Change detection is manually triggered via `ChangeDetectorRef`.
+
+---
+
+### **How Lifecycle Hooks Relate to Change Detection**
+
+1. **Initialization Phase**  
+   - When a component is created:
+     - `constructor` → `ngOnChanges` (if inputs exist) → `ngOnInit` → `ngDoCheck` → `ngAfterContentInit` → `ngAfterContentChecked` → `ngAfterViewInit` → `ngAfterViewChecked`.
+
+2. **Update Phase**  
+   - When data changes (e.g., input update, event, async operation):
+     - `ngOnChanges` (if inputs changed) → `ngDoCheck` → `ngAfterContentChecked` → `ngAfterViewChecked`.
+
+3. **Destruction Phase**  
+   - When a component is removed:
+     - `ngOnDestroy` (cleanup tasks).
+
+---
+
+### **Key Interactions**
+- **`ngOnChanges`** triggers when input properties change (part of change detection).
+- **`ngDoCheck`** allows custom checks but **does not prevent** Angular’s default detection.
+- **`ngAfterViewChecked`** and **`ngAfterContentChecked`** run after Angular updates the DOM, so avoid heavy logic here to prevent performance issues.
+- **OnPush Strategy** reduces unnecessary checks by relying on immutable data or observables.
+
+---
+
+### **Example Flow**
+```typescript
+@Component({...})
+export class ExampleComponent implements OnInit, OnChanges {
+  @Input() data: string;
+
+  ngOnChanges(changes: SimpleChanges) {
+    // Runs when `data` input changes
+    console.log('Input changed:', changes.data.currentValue);
+  }
+
+  ngOnInit() {
+    // Runs once after initial input setup
+    console.log('Component initialized');
+  }
+
+  ngDoCheck() {
+    // Runs on every change detection cycle
+    console.log('Change detection ran');
+  }
+}
+```
+
+---
+
+### **Best Practices**
+- Use `OnPush` change detection for performance-critical components.
+- Avoid side effects in `ngAfterViewChecked` and `ngAfterContentChecked`.
+- Use `ngOnDestroy` to prevent memory leaks (e.g., unsubscribe from observables).
+- Prefer `ngOnInit` over the constructor for initialization logic.
+
+By understanding lifecycle hooks and change detection, you can optimize Angular applications for both correctness and performance. 🚀
