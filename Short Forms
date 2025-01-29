@@ -1,0 +1,88 @@
+Here are other common Angular CLI commands developers use to generate code and structure an Angular app effectively, along with what they do and when to use them:
+
+---
+
+### **Common Angular CLI Generators**
+
+| Command                                      | Purpose                                                                 | Example Usage                                  |
+|----------------------------------------------|-------------------------------------------------------------------------|------------------------------------------------|
+| **`ng generate service <name>`**             | Creates a **service** (for shared logic/data).                         | `ng generate service api`                      |
+| **`ng generate directive <name>`**           | Creates a **directive** (for DOM manipulation).                        | `ng generate directive hover-highlight`        |
+| **`ng generate module <name>`**              | Creates a **module** (to organize components/directives/pipes).        | `ng generate module shared`                    |
+| **`ng generate guard <name>`**               | Creates a **route guard** (for route protection).                      | `ng generate guard auth`                       |
+| **`ng generate interceptor <name>`**         | Creates an **HTTP interceptor** (for global HTTP handling).            | `ng generate interceptor logging`              |
+| **`ng generate resolver <name>`**            | Creates a **route resolver** (pre-fetches data for routes).            | `ng generate resolver user`                    |
+| **`ng generate class <name>`**               | Creates a **TypeScript class** (models, utilities).                    | `ng generate class user.model`                 |
+| **`ng generate enum <name>`**                | Creates a **TypeScript enum** (for constants).                         | `ng generate enum user-role`                   |
+| **`ng generate library <name>`**             | Creates an **Angular library** (for reusable code in monorepos).       | `ng generate library ui-components`            |
+| **`ng generate state <name>`**               | Creates NgRx **state files** (if using NgRx for state management).     | `ng generate state user --module=app.module.ts`|
+
+---
+
+### **When to Use Each**:
+
+1. **Services (`ng generate service`)**  
+   - Use for API calls, shared business logic, or data sharing between components.  
+   - Example:  
+     ```bash
+     ng generate service user
+     ```
+
+2. **Directives (`ng generate directive`)**  
+   - Use to add custom behavior to DOM elements (e.g., tooltips, animations).  
+   - Example:  
+     ```bash
+     ng generate directive auto-focus
+     ```
+
+3. **Modules (`ng generate module`)**  
+   - Use to group related components/directives/pipes (e.g., `SharedModule`, `AdminModule`).  
+   - Example:  
+     ```bash
+     ng generate module admin --route=admin --module=app.module.ts
+     ```
+
+4. **Guards (`ng generate guard`)**  
+   - Use to protect routes (e.g., authentication checks).  
+   - Example:  
+     ```bash
+     ng generate guard auth
+     ```
+
+5. **Interceptors (`ng generate interceptor`)**  
+   - Use to globally modify HTTP requests/responses (e.g., adding headers, logging).  
+   - Example:  
+     ```bash
+     ng generate interceptor auth-token
+     ```
+
+6. **Resolvers (`ng generate resolver`)**  
+   - Use to fetch data before a route loads.  
+   - Example:  
+     ```bash
+     ng generate resolver user-data
+     ```
+
+---
+
+### **Shorthand Syntax**  
+Replace `generate` with `g` for faster commands:  
+```bash
+ng g component header
+ng g service api
+```
+
+---
+
+### **Bonus: Advanced Generators**  
+- **NgRx State Management**:  
+  ```bash
+  ng generate store State --module=app.module.ts
+  ng generate effect User --module=app.module.ts
+  ```
+- **Schematics for Custom Templates**:  
+  Create your own generators for reusable code patterns.
+
+---
+
+
