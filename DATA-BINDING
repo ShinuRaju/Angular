@@ -1,0 +1,139 @@
+
+### 1. **Interpolation (`{{ }}`)**  
+Displays component data in the template.  
+**Syntax**: `{{ expression }}`  
+**Example**:
+```typescript
+// Component
+title = 'Angular Data Binding';
+```
+```html
+<!-- Template -->
+<h1>{{ title }}</h1>  
+<p>2 + 2 = {{ 2 + 2 }}</p> <!-- Output: 4 -->
+```
+
+---
+
+### 2. **Property Binding (`[ ]`)**  
+Binds a component property to a DOM element property.  
+**Syntax**: `[property]="expression"`  
+**Example**:
+```typescript
+// Component
+imageUrl = 'assets/logo.png';
+isDisabled = true;
+```
+```html
+<!-- Template -->
+<img [src]="imageUrl">  
+<button [disabled]="isDisabled">Submit</button>
+```
+
+---
+
+### 3. **Event Binding (`( )`)**  
+Listens for DOM events (e.g., clicks, keystrokes) and triggers component methods.  
+**Syntax**: `(event)="handler()"`  
+**Example**:
+```typescript
+// Component
+onClick() {
+  console.log('Button clicked!');
+}
+```
+```html
+<!-- Template -->
+<button (click)="onClick()">Click Me</button>
+```
+
+---
+
+### 4. **Two-Way Binding (`[( )]`)**  
+Combines property and event binding to keep the component and template in sync.  
+**Syntax**: `[(ngModel)]="property"` (requires `FormsModule`).  
+**Example**:
+```typescript
+// Component
+userName = 'John';
+```
+```html
+<!-- Template -->
+<input [(ngModel)]="userName">  
+<p>Hello, {{ userName }}!</p> <!-- Updates as you type -->
+```
+
+**Note**: Import `FormsModule` in your app module:
+```typescript
+import { FormsModule } from '@angular/forms';
+
+@NgModule({
+  imports: [FormsModule],
+})
+export class AppModule {}
+```
+
+---
+
+### 5. **Attribute Binding**  
+Binds to HTML attributes (used when there’s no corresponding DOM property).  
+**Syntax**: `[attr.attribute-name]="expression"`  
+**Example**:
+```html
+<!-- Template -->
+<div [attr.aria-label]="labelText">Accessible Element</div>
+```
+
+---
+
+### 6. **Class & Style Binding**  
+Dynamically add/remove CSS classes or inline styles.  
+**Syntax**:
+- Classes: `[class.class-name]="condition"`  
+- Styles: `[style.property]="expression"`  
+
+**Examples**:
+```html
+<!-- Add 'active' class if isActive is true -->
+<div [class.active]="isActive"></div>
+
+<!-- Set font color dynamically -->
+<p [style.color]="textColor">Styled Text</p>
+```
+
+---
+
+### **Key Concepts**
+- **Unidirectional Flow**: Angular’s default data flow (component → template or template → component).
+- **Two-Way Binding**: Combines `[()]` to sync data in both directions (template ↔ component).
+- **Performance**: Avoid complex logic in bindings (use methods instead).
+
+---
+
+### **Summary Table**
+| Type              | Syntax             | Direction               | Use Case                          |
+|-------------------|--------------------|-------------------------|-----------------------------------|
+| **Interpolation** | `{{ value }}`      | Component → Template    | Display dynamic text.             |
+| **Property**      | `[property]`       | Component → Template    | Set DOM properties.               |
+| **Event**         | `(event)`          | Template → Component    | Handle user interactions.         |
+| **Two-Way**       | `[(ngModel)]`      | Template ↔ Component    | Forms/input synchronization.      |
+| **Attribute**     | `[attr.attribute]` | Component → Template    | Set HTML attributes.              |
+| **Class/Style**   | `[class]/[style]`  | Component → Template    | Dynamic styling.                  |
+
+---
+
+### **Example Workflow**
+1. **Component → Template** (Interpolation/Property Binding):  
+   Display data from the component in the view.  
+2. **Template → Component** (Event Binding):  
+   Capture user actions (e.g., button clicks).  
+3. **Template ↔ Component** (Two-Way Binding):  
+   Keep input fields and component data in sync.  
+
+By mastering these techniques, you’ll build dynamic, responsive Angular apps! 🚀
+
+
+
+
+
+ 
